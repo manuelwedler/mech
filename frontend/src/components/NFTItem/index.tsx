@@ -14,6 +14,8 @@ import { getNFTContext } from "../../utils/getNFTContext"
 import { AccountNftGrid } from "../NFTGrid"
 import NFTMedia from "../NFTMedia"
 import { Link } from "react-router-dom"
+import Transfer from "../Transfer"
+import FungibleLabel from "../FungibleLabel"
 
 interface Props {
   nft: MoralisNFT
@@ -22,7 +24,7 @@ interface Props {
 
 const NFTItem: React.FC<Props> = ({ nft, chainId }) => {
   const mechAddress = calculateMechAddress(getNFTContext(nft), chainId)
-  const operatorAddress = nft.owner_of
+  const operatorAddress = nft.owner_of as `0x${string}`
 
   const {
     data,
@@ -119,15 +121,18 @@ const NFTItem: React.FC<Props> = ({ nft, chainId }) => {
           )}
           {mechErc20Balances.map((balance, index) => (
             <li key={index} className={classes.asset}>
-              <div className={classes.assetName}>
-                <img src={balance.logo} alt={`logo for ${balance.name}`} />
-                <div>{balance.name}</div>
-              </div>
+              <FungibleLabel asset={balance} />
               <div className={classes.value}>
                 <p>
                   {formatUnits(BigInt(balance.balance), balance.decimals || 0)}
                 </p>
                 <p>{balance.symbol}</p>
+                <Transfer
+                  asset={balance}
+                  mechAddress={mechAddress}
+                  operatorAddress={operatorAddress}
+                  chainId={chainId}
+                />
               </div>
             </li>
           ))}
